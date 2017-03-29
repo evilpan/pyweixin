@@ -48,6 +48,24 @@ $ cd pyweixin
 $ python example.py
 ```
 
+# 截图示例
+
+_登录_
+
+![login](./images/login.gif)
+
+_接收信息_
+
+![receive](./images/receive.png)
+
+_自动回复_
+
+![reply](./images/reply.png)
+
+_所有收发的信息会同步到微信客户端_
+
+![phone](./images/phone.png)
+
 # FAQ
 
 ## 为什么用pyweixin？

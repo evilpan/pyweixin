@@ -34,32 +34,36 @@ class MyHandler(MessageHandler):
 
         print '[+] [{} -> {}]{}:'.format(fromname, toname, groupuser),
         if mtype == 1:
-            print('<Text message>:' + text)
+            print('<Text Message>:' + text)
         elif mtype == 3:
-            print('<Image message>')
+            print('<Image Message>')
         elif mtype == 34:
-            print('<Audio message>')
+            print('<Audio Message>')
         elif mtype == 42:
             print('<Name Card>')
         elif mtype == 43:
-            print('<Video message>')
+            print('<Video Message>')
         elif mtype == 47:
             print('<Sticker>')
         elif mtype == 49:
             print('<Share Link>')
         elif mtype == 51:
-            print('<Update contact>')
+            print('<Update Contact>')
         elif mtype == 10000:
             print('<Luckey Money>')
         elif mtype == 10002:
-            print('<Recalled a message>')
+            print('<Recalled A Message>')
         else:
-            print('<Unknown type:{}>'.format(mtype))
+            print('<Unknown Type:{}>'.format(mtype))
 
         if self.autoreply:
             if mtype == 1:
                 reply = self.bot.askRandom(text)
+                print '[+] autoreply: ' + reply
                 client.webwxsendmsg(fromwxid, reply)
+    def on_event(self, client, event):
+        print '[+] <event>:' + event
+
 
 
 if __name__ == '__main__':
@@ -67,10 +71,15 @@ if __name__ == '__main__':
     wxclient = WxClient(handler)
     wxclient.start_background()
     while True:
-        enable = raw_input('autoreply(enable/disable ):')
-        if enable == 'enable':
+        cmd = raw_input('CMD:')
+        if cmd == 'auto on':
+            # 开启自动回复
             handler.set_autoreply(True)
-        elif enable == 'disable':
+        elif cmd == 'auto off':
+            # 关闭自动回复
             handler.set_autoreply(False)
+        elif cmd == 'quit' or cmd == 'exit':
+            wxclient.webwxlogout()
+            break
         else:
             pass

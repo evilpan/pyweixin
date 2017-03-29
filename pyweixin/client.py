@@ -38,10 +38,9 @@ class MessageHandler(object):
             len(client.groups),
             len(client.contacts)))
     def on_logout(self, client):
-        print '[+] User logout'
-
+        pass
     def on_event(self, client, event):
-        print '[+] <event>:' + event
+        pass
     def on_message(self, client, message):
         pass
 
@@ -91,16 +90,16 @@ class WxClient(object):
             (retcode, selector) = self.syncheck()
             if retcode == '0':
                 if selector == '0':
-                    self.handler.on_event(self, 'SYN_CHECK')
+                    self.handler.on_event(self, 'SYN_CHECK_AGAIN')
                     continue
                 else:
-                    self.handler.on_event(self, 'SYN_UPDATE')
+                    self.handler.on_event(self, 'SYN_CHECK_UPDATE')
                     self.webwxsync()
             elif retcode == '1101':
                 self.handler.on_logout(self)
                 running = False
             else :
-                self.handler.on_event(self, 'SYN_ERROR {}'.format(retcode))
+                self.handler.on_event(self, 'SYN_CHECK_ERROR {}'.format(retcode))
                 running = False
 
     def get_uuid(self):
@@ -128,7 +127,7 @@ class WxClient(object):
             version=1,#Range from 1 to 40, controls the size of qr code, 1 = smallest = 21x21 matrix
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
-            border=4,
+            border=4
         )
         code.add_data(data)
         return code
@@ -140,11 +139,7 @@ class WxClient(object):
                 img.save(f, kind='PNG')
             os.startfile(imgpath)
         else:
-            mat = code.get_matrix()
-            for i in mat:
-                BLACK = '\033[40m  \033[0m'
-                WHITE = '\033[47m  \033[0m'
-                print ''.join([BLACK if j else WHITE for j in i])
+            code.print_ascii(tty=True)
 
     def wait_scan(self, uuid):
         url = 'https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip={}&uuid={}&_={}'.format(
@@ -302,13 +297,13 @@ class WxClient(object):
         selector = -1
         url = 'https://webpush.wx2.qq.com/cgi-bin/mmwebwx-bin/synccheck'
         params = {
-                'r': timestamp(),
+                '_': timestamp(),
                 'skey': self.skey,
                 'sid': self.sid,
                 'uin': self.uin,
                 'deviceid': self.deviceid,
                 'synckey': self._getSyncKeyStr(),
-                '_': timestamp()
+                'r': timestamp()
                 }
         response = self.session.get(url, params=params)
         self.logger.debug('syncheck get:' + response.url)
